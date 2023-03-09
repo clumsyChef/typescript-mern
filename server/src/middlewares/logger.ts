@@ -1,10 +1,4 @@
-// const { format } = require('date-fns')
-// const { v4: uuid } = require('uuid')
-// const fs = require('fs')
-// const fsPromises = require('fs').promises
-// const path = require('path')
-
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 
 import { format } from "date-fns";
 import { v4 } from "uuid";

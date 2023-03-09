@@ -1,24 +1,32 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import dotenv from "dotenv";
 import { logger } from "./middlewares/logger";
 import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
+import { rootRouter } from "./routes/rootRoute";
+import { userRouter } from "./routes/userRoute";
+import bodyParser from "body-parser";
 
 // getting environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 3500;
+const PORT: string = process.env.BACKEND_PORT || "3500";
 
 // calling middlewares
 app.use(logger);
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // Routes and stuff
 
-app.get("/", (req: Request, res: Response) => {
-    res.json({ message: "Henlo World" });
-});
+app.use("/", rootRouter);
+app.use("/users", userRouter);
+
+// app.get("/", (req: Request, res: Response) => {
+//     res.json({ message: "Henlo World" });
+// });
 
 app.all("*", (req: Request, res: Response) => {
     res.status(404);

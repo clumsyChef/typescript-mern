@@ -1,12 +1,10 @@
 import express from "express";
 import type { Request, Response } from "express";
 import dotenv from "dotenv";
-import { logger } from "./middlewares/logger";
+import { logger } from "./middlewares";
 import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
-import { rootRouter } from "./routes/rootRoute";
-import { userRouter } from "./routes/userRoute";
-import bodyParser from "body-parser";
+import { rootRouter, userRouter } from "./routes";
 
 // getting environment variables
 dotenv.config();
@@ -20,14 +18,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes and stuff
-
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 
-// app.get("/", (req: Request, res: Response) => {
-//     res.json({ message: "Henlo World" });
-// });
-
+// all other routes
 app.all("*", (req: Request, res: Response) => {
     res.status(404);
     if (req.accepts("html")) {

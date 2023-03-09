@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { logEvents } from "./logger";
 
-export const errorHandler = (
+export const errorLogger = (
     err: Error,
     req: Request,
     res: Response,

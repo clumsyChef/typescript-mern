@@ -26,7 +26,10 @@ export const logEvents = async (message: string, logFileName: string) => {
 };
 
 export const logger = (req: Request, res: Response, next: NextFunction) => {
-    logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
-    console.log(`${req.method} ${req.path}`);
+    logEvents(
+        `${req.method}\t${req.url}\t${req.headers.origin ?? "Same Origin"}`,
+        "reqLog.log"
+    );
+    // console.log(`${req.method} ${req.path}`);
     next();
 };

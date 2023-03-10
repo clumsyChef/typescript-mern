@@ -1,28 +1,14 @@
 import express from "express";
 import type { Response, Request, NextFunction } from "express";
+import { UserController } from "../../controllers";
 
 export const userRouter = express.Router();
 
 userRouter
     .route("/")
-    .get((req: Request, res: Response, next: NextFunction) => {
-        const { uid } = req.body;
-        res.json({ message: `Get user with the id ${uid}` });
-    })
-    .post(async (req: Request, res: Response, next: NextFunction) => {
-        res.json({ message: `Create new user` });
-    })
-    .put((req: Request, res: Response, next: NextFunction) => {
-        const { uid } = req.body;
-        res.json({ message: `Change data for the user with id ${uid}` });
-    })
-    .delete((req: Request, res: Response, next: NextFunction) => {
-        const { uid } = req.body;
-        res.json({ message: `Delete user with the id ${uid}` });
-    });
+    .get(UserController.get)
+    .post(UserController.create)
+    .put(UserController.update)
+    .delete(UserController.remove);
 
-userRouter
-    .route("/all")
-    .get((req: Request, res: Response, next: NextFunction) => {
-        res.json({ message: "Get all users" });
-    });
+userRouter.route("/all").get(UserController.getAll);

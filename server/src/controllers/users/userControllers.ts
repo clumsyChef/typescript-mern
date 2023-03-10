@@ -1,32 +1,56 @@
 import bcrypt from "bcrypt";
 import type { Request, Response, NextFunction } from "express";
+import { UserModels } from "../../models";
 
-export const getAllUsers = (
+const get = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+): Promise<void> => {
+    const data = await UserModels.get();
+};
 
-export const getSingleUser = (
+const create = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+): Promise<void> => {
+    const data = UserModels.create();
+};
 
-export const createUser = (
+const update = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+): Promise<void> => {
+    const data = UserModels.update();
+};
 
-export const updateUser = (
+const remove = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+): Promise<void> => {
+    const data = UserModels.remove();
+};
 
-export const deleteUser = (
+const getAll = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {};
+): Promise<void> => {
+    const data = await UserModels.getAll();
+    if (data) {
+        res.json({ status: true, data });
+    } else {
+        res.json({ status: false, message: "No Data Found." });
+    }
+};
+
+export const UserController = {
+    get,
+    create,
+    update,
+    remove,
+    getAll,
+};

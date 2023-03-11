@@ -1,30 +1,31 @@
-import type { Request } from "express";
+import type { I_GetParams, I_UserData } from "./I_Users";
 import data from "../../../db/users.json";
+import { appendToUsers } from "../../utils/dataManipulation";
 
-interface I_GetParams {
-    id?: string;
-    username?: string;
-    email?: string;
-}
-
-const get = (getParams: I_GetParams) => {
+const get = (getParams: I_GetParams): Promise<I_UserData | undefined> => {
     const { id, username, email } = getParams;
 
     return new Promise((resolve, reject) => {
-        const userData = data.find((item) => {
-            if (id) item?.[id] === id;
-            if (username) item?.[username] === username;
-            if (email) item?.[email] === email;
+        const userData = data.find((item: I_UserData) => {
+            return (
+                item.id === id ||
+                item.username === username ||
+                item.email === email
+            );
         });
-        if (userData) {
-            resolve({ status: true, data: userData });
-        } else {
-            reject({ status: false, message: "No user found" });
-        }
+
+        resolve(userData);
     });
 };
 
-const create = (req: Request) => {};
+const create = (dataToSave: I_UserData) => {
+    const newData = [...data, dataToSave];
+    const newDataAsStr: string = JSON.stringify(newData);
+    return new Promise((resolve, reject) => {
+        appendToUsers(newDataAsStr);
+        resolve(true);
+    });
+};
 
 const update = () => {};
 

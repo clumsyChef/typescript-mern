@@ -15,17 +15,47 @@ const create = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const { username, fullName, email, mobile } = req.body;
-    if (!username || !fullName || !email || !mobile) {
+    const { username, fullName, email, mobile, password } = req.body;
+    if (username && fullName && email && mobile) {
+        const userData = await UserModels.get({ username, email });
+        if (!userData) {
+            const hashedPass = await bcrypt.hash(password, 10);
+            const dataToSave = {
+                username,
+                fullName,
+                email,
+                mobile,
+                password: hashedPass,
+            };
+            const createdUser = await UserModels.create(dataToSave);
+            if (createdUser) {
+                res.json({
+                    status: true,
+                    message: `Account with username "${username}" created by ${fullName}.`,
+                });
+            }
+        } else if (userData.username === username && userData.email === email) {
+            res.json({
+                status: true,
+                message: "Username and Email already exists.",
+            });
+        } else if (userData.username === username) {
+            res.json({
+                status: true,
+                message: "Username already exists.",
+            });
+        } else if (userData.email === email) {
+            res.json({
+                status: true,
+                message: "Email already exists.",
+            });
+        }
+    } else {
         res.json({
             status: false,
             message: "All fields are required to create a user.",
         });
     }
-
-    const userExists = UserModels.get({ username, email });
-
-    // const data = UserModels.create(req);
 };
 
 const update = async (

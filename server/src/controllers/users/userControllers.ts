@@ -7,7 +7,7 @@ const get = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const data = await UserModels.get();
+    // const data = await UserModels.get();
 };
 
 const create = async (
@@ -15,7 +15,17 @@ const create = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const data = UserModels.create();
+    const { username, fullName, email, mobile } = req.body;
+    if (!username || !fullName || !email || !mobile) {
+        res.json({
+            status: false,
+            message: "All fields are required to create a user.",
+        });
+    }
+
+    const userExists = UserModels.get({ username, email });
+
+    // const data = UserModels.create(req);
 };
 
 const update = async (

@@ -1,14 +1,36 @@
+import type { Request } from "express";
 import data from "../../../db/users.json";
 
-const get = () => {};
+interface I_GetParams {
+    id?: string;
+    username?: string;
+    email?: string;
+}
 
-const create = () => {};
+const get = (getParams: I_GetParams) => {
+    const { id, username, email } = getParams;
+
+    return new Promise((resolve, reject) => {
+        const userData = data.find((item) => {
+            if (id) item?.[id] === id;
+            if (username) item?.[username] === username;
+            if (email) item?.[email] === email;
+        });
+        if (userData) {
+            resolve({ status: true, data: userData });
+        } else {
+            reject({ status: false, message: "No user found" });
+        }
+    });
+};
+
+const create = (req: Request) => {};
 
 const update = () => {};
 
 const remove = () => {};
 
-const getAll = () => {
+const getAll = (): Promise<object[]> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve(data);

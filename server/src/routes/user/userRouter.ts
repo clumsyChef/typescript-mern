@@ -1,5 +1,4 @@
 import express from "express";
-import type { Response, Request, NextFunction } from "express";
 import { UserController } from "../../controllers";
 
 export const userRouter = express.Router();

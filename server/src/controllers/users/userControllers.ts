@@ -29,29 +29,29 @@ const create = async (
             };
             const createdUser = await UserModels.create(dataToSave);
             if (createdUser) {
-                res.json({
+                res.status(201).json({
                     status: true,
                     message: `Account with username "${username}" created by ${fullName}.`,
                 });
             }
         } else if (userData.username === username && userData.email === email) {
-            res.json({
+            res.status(400).json({
                 status: true,
                 message: "Username and Email already exists.",
             });
         } else if (userData.username === username) {
-            res.json({
+            res.status(400).json({
                 status: true,
                 message: "Username already exists.",
             });
         } else if (userData.email === email) {
-            res.json({
+            res.status(400).json({
                 status: true,
                 message: "Email already exists.",
             });
         }
     } else {
-        res.json({
+        res.status(401).json({
             status: false,
             message: "All fields are required to create a user.",
         });

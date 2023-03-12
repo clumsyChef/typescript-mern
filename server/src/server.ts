@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { logger } from "./middlewares";
 import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
-import { rootRouter, userRouter } from "./routes";
+import { rootRouter, userRouter, authRouter } from "./routes";
 
 // getting environment variables
 dotenv.config();
@@ -20,6 +20,7 @@ app.use(express.json());
 // Routes and stuff
 app.use("/", rootRouter);
 app.use("/users", userRouter);
+app.use("/auth", authRouter);
 
 // all other routes
 app.all("*", (req: Request, res: Response) => {

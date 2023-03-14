@@ -1,13 +1,35 @@
 import bcrypt from "bcrypt";
 import type { Request, Response, NextFunction } from "express";
 import { UserModels } from "../../models";
+import { v4 as uuidv4 } from "uuid";
 
 const get = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    // const data = await UserModels.get();
+    const { id, username, email, fullName, mobile } = req.body;
+    if (id || username || email || fullName || mobile) {
+        const userData = await UserModels.get({
+            id,
+            username,
+            email,
+            fullName,
+            mobile,
+        });
+
+        if (userData) {
+            const { password, ...rest } = userData;
+            res.status(200).json({ status: true, data: rest });
+        } else {
+            res.status(400).json({
+                status: false,
+                message: "No user exists for the provided data.",
+            });
+        }
+    } else {
+        res.status(404).json({ status: false, message: "User Not found" });
+    }
 };
 
 const create = async (
@@ -21,6 +43,7 @@ const create = async (
         if (!userData) {
             const hashedPass = await bcrypt.hash(password, 10);
             const dataToSave = {
+                id: uuidv4(),
                 username,
                 fullName,
                 email,

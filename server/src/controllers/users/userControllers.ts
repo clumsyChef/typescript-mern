@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import type { Request, Response, NextFunction } from "express";
 import { UserModels } from "../../models";
 import { v4 as uuidv4 } from "uuid";
+import { I_UserData } from "../../models/users/I_Users";
 
 const get = async (
     req: Request,
@@ -9,9 +10,16 @@ const get = async (
     next: NextFunction
 ): Promise<void> => {
     const { id, username, email, fullName, mobile } = req.body;
-    if (id || username || email || fullName || mobile) {
-        const userData = await UserModels.get({
-            id,
+    if (id) {
+        const userData = await UserModels.get(id);
+        if (userData) {
+            res.status(200).json({ status: true, data: userData });
+        } else {
+            res.status(404).json({ status: false, message: `User Not Found.` });
+        }
+    }
+    if (username || email || fullName || mobile) {
+        const userData: I_UserData[] = await UserModels.getAll({
             username,
             email,
             fullName,
@@ -19,16 +27,16 @@ const get = async (
         });
 
         if (userData) {
-            const { password, ...rest } = userData;
-            res.status(200).json({ status: true, data: rest });
-        } else {
-            res.status(400).json({
-                status: false,
-                message: "No user exists for the provided data.",
+            const withoutPasswords = userData.map((item) => {
+                const { password, ...rest } = item;
+                return rest;
             });
+            res.status(200).json({ status: true, data: withoutPasswords });
+        } else {
+            res.status(400).json({ status: false, message: "No User Found." });
         }
     } else {
-        res.status(404).json({ status: false, message: "User Not found" });
+        res.status(404).json({ status: false, message: "No User Found." });
     }
 };
 
@@ -39,8 +47,34 @@ const create = async (
 ): Promise<void> => {
     const { username, fullName, email, mobile, password } = req.body;
     if (username && fullName && email && mobile) {
-        const userData = await UserModels.get({ username, email });
-        if (!userData) {
+        const userData: I_UserData[] = await UserModels.getAll({
+            username,
+            email,
+        });
+        const { duplicateUsername, duplicateEmail } = userData?.reduce(
+            (acc, curr) => {
+                if (curr.username === username) acc.duplicateUsername = true;
+                if (curr.email === email) acc.duplicateEmail = true;
+                return acc;
+            },
+            { duplicateUsername: false, duplicateEmail: false }
+        );
+        if (duplicateUsername && duplicateEmail) {
+            res.status(400).json({
+                status: false,
+                message: "Username and Email already exists.",
+            });
+        } else if (duplicateUsername) {
+            res.status(400).json({
+                status: false,
+                message: "Username already exists.",
+            });
+        } else if (duplicateEmail) {
+            res.status(400).json({
+                status: false,
+                message: "Email already exists.",
+            });
+        } else {
             const hashedPass = await bcrypt.hash(password, 10);
             const dataToSave = {
                 id: uuidv4(),
@@ -57,21 +91,6 @@ const create = async (
                     message: `Account with username "${username}" created by ${fullName}.`,
                 });
             }
-        } else if (userData.username === username && userData.email === email) {
-            res.status(400).json({
-                status: true,
-                message: "Username and Email already exists.",
-            });
-        } else if (userData.username === username) {
-            res.status(400).json({
-                status: true,
-                message: "Username already exists.",
-            });
-        } else if (userData.email === email) {
-            res.status(400).json({
-                status: true,
-                message: "Email already exists.",
-            });
         }
     } else {
         res.status(401).json({

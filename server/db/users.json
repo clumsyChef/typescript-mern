@@ -1,34 +1,10 @@
 [
     {
-        "id": "c08ca27e-0086-4139-95f3-c7c786bc60d1",
+        "id": "af6a31f6-f98b-4e0e-a34b-b82cc239626f",
         "username": "sarthak02",
         "fullName": "Sarthak Jha",
         "email": "sarthak@02.com",
         "mobile": "1234-1234-23",
-        "password": "$2b$10$jLz4Ip9LLM/zMbCyW2UR6.MPknqLvPJreTPRMRAiE5S4D0TbRjL1S"
-    },
-    {
-        "id": "3f24f2ad-df71-44f6-ab11-86f9ab1d0e8c",
-        "username": "sarthak03",
-        "fullName": "Sarthak Jha",
-        "email": "sarthak@03.com",
-        "mobile": "1234-1234-23",
-        "password": "$2b$10$/oQdc9bbLXsBN0KGOmkyxefO7XaFtvg6W/Rm8mNLm5/xJUfRpQLBW"
-    },
-    {
-        "id": "26545e2d-05bc-4eb5-8318-e104256b2c8c",
-        "username": "sarthak01",
-        "fullName": "Sarthak Jha",
-        "email": "sarthak@01.com",
-        "mobile": "1234-1234-23",
-        "password": "$2b$10$gfxr8O4ESefb4Ckb5fW9iOybutHbA3s9GAmZkPVmnXB0rilzzxhDW"
-    },
-    {
-        "id": "7e51f9ac-3382-41e1-8ca6-554f8d78fe95",
-        "username": "sarthak04",
-        "fullName": "Sarthak Jha",
-        "email": "sarthak@04.com",
-        "mobile": "1234-1234-23",
-        "password": "$2b$10$V/AnfTCeG24JJObX3uQzouS0uaY.4H1BBMVMweA7zvg9GiuJkUnSW"
+        "password": "$2b$10$ZAYNnKNhXbDEA9TcrSow4OHOvK4il5sIbROY4s6r.C8u6CWak.WbC"
     }
 ]

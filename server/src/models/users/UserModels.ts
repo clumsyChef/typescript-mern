@@ -1,9 +1,8 @@
 import type { I_GetParams, I_UserData } from "./I_Users";
-// import data from "../../../db/users.json";
+import data from "../../../db/users.json";
 import { appendToUsers } from "../../utils/dataManipulation";
 
 const get = (id: string): Promise<I_UserData | undefined> => {
-    const data: I_UserData[] = require("../../../db/users.json");
     return new Promise((resolve, reject) => {
         const userData = data.find((item: I_UserData) => item.id === id);
         resolve(userData);
@@ -11,7 +10,6 @@ const get = (id: string): Promise<I_UserData | undefined> => {
 };
 
 const create = (dataToSave: I_UserData) => {
-    const data: I_UserData[] = require("../../../db/users.json");
     const newData = [...data, dataToSave];
     const newDataAsStr: string = JSON.stringify(newData, null, 4);
     return new Promise((resolve, reject) => {
@@ -20,12 +18,32 @@ const create = (dataToSave: I_UserData) => {
     });
 };
 
-const update = () => {};
+const update = (dataToSave: I_UserData) => {
+    const changedData: I_UserData[] = data?.map((item) => {
+        return item.id === dataToSave.id ? dataToSave : item;
+    });
 
-const remove = () => {};
+    const newDataAsStr: string = JSON.stringify(changedData, null, 4);
+
+    return new Promise((resolve, reject) => {
+        appendToUsers(newDataAsStr);
+        resolve(dataToSave);
+    });
+};
+
+const remove = (id: string) => {
+    const changedData: I_UserData[] = data?.filter((item) => {
+        if (item.id !== id) return item;
+    });
+
+    const newDataAsStr: string = JSON.stringify(changedData, null, 4);
+    return new Promise((resolve, reject) => {
+        appendToUsers(newDataAsStr);
+        resolve(id);
+    });
+};
 
 const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
-    const data: I_UserData[] = require("../../../db/users.json");
     if (getParams) {
         const { username, email, fullName, mobile } = getParams;
         return new Promise((resolve, reject) => {

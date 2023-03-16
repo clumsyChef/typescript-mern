@@ -105,7 +105,27 @@ const update = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const data = UserModels.update();
+    const newData = req.body;
+
+    if (newData?.id) {
+        const userData = await UserModels.get(newData.id);
+        if (userData) {
+            const dataToSave = { ...userData, ...newData };
+            dataToSave.password = await bcrypt.hash(dataToSave.password, 10);
+            const savedData = await UserModels.update(dataToSave);
+            if (savedData) {
+                const { id, password, ...rest } = newData;
+                res.status(201).json({ status: true, data: rest });
+            } else {
+                res.status(400).json({
+                    status: false,
+                    message: `There was some problem in saving the user data.`,
+                });
+            }
+        }
+    } else {
+        res.status(403).json({ status: false, message: "Forbidden." });
+    }
 };
 
 const remove = async (
@@ -113,7 +133,31 @@ const remove = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const data = UserModels.remove();
+    const { id } = req.body;
+    if (id) {
+        const userData: I_UserData | undefined = await UserModels.get(id);
+        if (userData) {
+            const removeUser = await UserModels.remove(id);
+            if (removeUser) {
+                res.status(200).json({
+                    status: false,
+                    message: `User removed`,
+                });
+            } else {
+                res.status(400).json({
+                    status: false,
+                    message: "Something went wrong.",
+                });
+            }
+        } else {
+            res.status(400).json({
+                status: false,
+                message: "Something went wrong.",
+            });
+        }
+    } else {
+        res.status(401).json({ status: false, message: "Forbidden" });
+    }
 };
 
 const getAll = async (
@@ -121,9 +165,9 @@ const getAll = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    const data = await UserModels.getAll();
-    if (data) {
-        res.json({ status: true, data });
+    const userData = await UserModels.getAll();
+    if (userData) {
+        res.json({ status: true, data: userData });
     } else {
         res.json({ status: false, message: "No Data Found." });
     }

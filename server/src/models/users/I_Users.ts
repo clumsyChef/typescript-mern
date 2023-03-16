@@ -7,7 +7,7 @@ export interface I_GetParams {
 }
 
 export interface I_UserData {
-    id?: string;
+    id: string;
     username: string;
     fullName: string;
     email: string;

@@ -6,5 +6,13 @@
         "email": "sarthak@02.com",
         "mobile": "1234-1234-23",
         "password": "$2b$10$ZAYNnKNhXbDEA9TcrSow4OHOvK4il5sIbROY4s6r.C8u6CWak.WbC"
+    },
+    {
+        "id": "6afe7ce1-f5cf-48e1-a73f-acbf9fdc8d00",
+        "username": "sarthak03",
+        "fullName": "Sarthak Jha",
+        "email": "sarthak@03.com",
+        "mobile": "69696-69696",
+        "password": "$2b$10$53zLO1.uaVNXX6viET80K.2Y65TxQAqDIBXxirHU11zVC2SekDzBG"
     }
 ]

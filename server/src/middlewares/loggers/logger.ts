@@ -16,20 +16,13 @@ export const logEvents = async (message: string, logFileName: string) => {
         if (!fs.existsSync(path.join(__dirname, "..", "..", "logs"))) {
             await fsPromises.mkdir(path.join(__dirname, "..", "..", "logs"));
         }
-        await fsPromises.appendFile(
-            path.join(__dirname, "..", "..", "logs", logFileName),
-            logItem
-        );
+        await fsPromises.appendFile(path.join(__dirname, "..", "..", "logs", logFileName), logItem);
     } catch (err) {
         console.log(err);
     }
 };
 
 export const logger = (req: Request, res: Response, next: NextFunction) => {
-    logEvents(
-        `${req.method}\t${req.url}\t${req.headers.origin ?? "Same Origin"}`,
-        "reqLog.log"
-    );
-    // console.log(`${req.method} ${req.path}`);
+    logEvents(`${req.method}\t${req.url}\t${req.headers.origin ?? "Same Origin"}`, "reqLog.log");
     next();
 };

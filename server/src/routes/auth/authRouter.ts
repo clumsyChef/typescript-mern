@@ -5,4 +5,4 @@ export const authRouter = express.Router();
 
 authRouter.route("/login").post(AuthController.login);
 
-authRouter.route("/logout");
+authRouter.route("/logout").post(AuthController.logout);

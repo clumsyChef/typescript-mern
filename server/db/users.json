@@ -13,6 +13,7 @@
         "fullName": "Sarthak Jha",
         "email": "sarthak@03.com",
         "mobile": "69696-69696",
-        "password": "$2b$10$53zLO1.uaVNXX6viET80K.2Y65TxQAqDIBXxirHU11zVC2SekDzBG"
+        "password": "$2b$10$53zLO1.uaVNXX6viET80K.2Y65TxQAqDIBXxirHU11zVC2SekDzBG",
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhcnRoYWtAMDMuY29tIiwiaWF0IjoxNjc5MjMzMDU1LCJleHAiOjE2NzkzMTk0NTV9.2fYLURG0MUizqtIV1De29OT5TL5H0zIm1uqgeb6-fPs"
     }
 ]

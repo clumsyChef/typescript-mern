@@ -4,11 +4,7 @@ import { UserModels } from "../../models";
 import { v4 as uuidv4 } from "uuid";
 import { I_UserData } from "../../models/users/I_Users";
 
-const get = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
+const get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id, username, email, fullName, mobile } = req.body;
     if (id) {
         const userData = await UserModels.get(id);
@@ -26,7 +22,7 @@ const get = async (
             mobile,
         });
 
-        if (userData) {
+        if (userData?.length) {
             const withoutPasswords = userData.map((item) => {
                 const { password, ...rest } = item;
                 return rest;
@@ -40,36 +36,12 @@ const get = async (
     }
 };
 
-const create = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
+const create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { username, fullName, email, mobile, password } = req.body;
     if (username && fullName && email && mobile) {
-        const userData: I_UserData[] = await UserModels.getAll({
-            username,
-            email,
-        });
-        const { duplicateUsername, duplicateEmail } = userData?.reduce(
-            (acc, curr) => {
-                if (curr.username === username) acc.duplicateUsername = true;
-                if (curr.email === email) acc.duplicateEmail = true;
-                return acc;
-            },
-            { duplicateUsername: false, duplicateEmail: false }
-        );
-        if (duplicateUsername && duplicateEmail) {
-            res.status(400).json({
-                status: false,
-                message: "Username and Email already exists.",
-            });
-        } else if (duplicateUsername) {
-            res.status(400).json({
-                status: false,
-                message: "Username already exists.",
-            });
-        } else if (duplicateEmail) {
+        const userData: I_UserData[] = await UserModels.getAll({ email });
+
+        if (userData?.length) {
             res.status(400).json({
                 status: false,
                 message: "Email already exists.",
@@ -100,11 +72,7 @@ const create = async (
     }
 };
 
-const update = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
+const update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const newData = req.body;
 
     if (newData?.id) {
@@ -128,11 +96,7 @@ const update = async (
     }
 };
 
-const remove = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
+const remove = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.body;
     if (id) {
         const userData: I_UserData | undefined = await UserModels.get(id);
@@ -160,11 +124,7 @@ const remove = async (
     }
 };
 
-const getAll = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
+const getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const userData = await UserModels.getAll();
     if (userData) {
         res.json({ status: true, data: userData });

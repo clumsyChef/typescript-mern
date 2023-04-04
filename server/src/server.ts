@@ -5,6 +5,7 @@ import { logger } from "./middlewares";
 import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
 import { rootRouter, userRouter, authRouter } from "./routes";
+import session from "express-session";
 
 // getting environment variables
 dotenv.config();
@@ -16,6 +17,14 @@ const PORT: string = process.env.BACKEND_PORT || "3500";
 app.use(logger);
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(
+    session({
+        // @ts-ignore
+        secret: process.env.SESSION_KEY,
+        resave: false,
+        saveUninitialized: false,
+    })
+);
 
 // Routes and stuff
 app.use("/", rootRouter);

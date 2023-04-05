@@ -36,12 +36,14 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) => {
     if (decodedAccess.includes("jwt expired")) {
         let decodedRefresh;
         try {
-            decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOEKN_SECRET ?? "");
+            decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET ?? "");
         } catch (err: any) {
             decodedRefresh = err.message;
         }
     } else {
-        //
+        // @ts-ignore
+        req.email = decodedAccess.email;
+        return next();
     }
 };
 export { verifyUser };

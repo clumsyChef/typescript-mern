@@ -17,12 +17,22 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
                     process.env.REFRESH_TOKEN_SECRET,
                 ];
                 if (accessSecret && refreshSecret) {
-                    const accessToken = jwt.sign({ email }, accessSecret, { expiresIn: "30s" });
-                    const refreshToken = jwt.sign({ email }, refreshSecret, { expiresIn: "1d" });
+                    const accessToken = jwt.sign({ id: userData[0].id, email }, accessSecret, { expiresIn: "10s" });
+                    const refreshToken = jwt.sign({ id: userData[0].id, email }, refreshSecret, { expiresIn: "1d" });
                     const dataWithToken = { ...userData[0], refreshToken };
                     const changedData = await UserModels.update(dataWithToken);
-                    res.cookie("accessToken", accessToken, { httpOnly: true, maxAge: 10 * 1000 });
-                    res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+                    res.cookie("accessToken", accessToken, {
+                        httpOnly: true,
+                        sameSite: "strict",
+                        secure: true,
+                        maxAge: 10 * 1000,
+                    });
+                    res.cookie("refreshToken", refreshToken, {
+                        httpOnly: true,
+                        sameSite: "strict",
+                        secure: true,
+                        maxAge: 24 * 60 * 60 * 1000,
+                    });
                     res.status(200).json({ status: true, message: `You are now logged in as ${email}` });
                 } else {
                     res.status(401).json({ status: false, message: "Something went wrong." });

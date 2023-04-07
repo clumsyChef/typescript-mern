@@ -13,4 +13,10 @@ export interface I_UserData {
     email: string;
     password: string;
     mobile: string;
+    refreshToken: string | null;
+}
+
+export interface I_JwtVerification {
+    id: string;
+    email: string;
 }

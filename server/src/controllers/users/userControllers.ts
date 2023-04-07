@@ -55,6 +55,7 @@ const create = async (req: Request, res: Response, next: NextFunction): Promise<
                 email,
                 mobile,
                 password: hashedPass,
+                refreshToken: null,
             };
             const createdUser = await UserModels.create(dataToSave);
             if (createdUser) {

@@ -1,4 +1,4 @@
-import type { I_GetParams, I_UserData } from "./I_Users";
+import type { I_GetParams, I_UserData, I_JwtVerification } from "./I_Users";
 import data from "../../../db/users.json";
 import { appendToUsers } from "../../utils/dataManipulation";
 
@@ -48,33 +48,13 @@ const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
         const { username, email, fullName, mobile } = getParams;
         return new Promise((resolve, reject) => {
             const requiredData = data?.filter((item, index) => {
-                if (
-                    username &&
-                    item.username
-                        .toLowerCase()
-                        .includes(username?.toLowerCase())
-                )
-                    return item;
+                if (username && item.username.toLowerCase().includes(username?.toLowerCase())) return item;
 
-                if (
-                    email &&
-                    item.email.toLowerCase().includes(email?.toLowerCase())
-                )
-                    return item;
+                if (email && item.email.toLowerCase().includes(email?.toLowerCase())) return item;
 
-                if (
-                    fullName &&
-                    item.fullName
-                        .toLowerCase()
-                        .includes(fullName?.toLowerCase())
-                )
-                    return item;
+                if (fullName && item.fullName.toLowerCase().includes(fullName?.toLowerCase())) return item;
 
-                if (
-                    mobile &&
-                    item.mobile.toLowerCase().includes(mobile?.toLowerCase())
-                )
-                    return item;
+                if (mobile && item.mobile.toLowerCase().includes(mobile?.toLowerCase())) return item;
             });
 
             resolve(requiredData);
@@ -86,10 +66,19 @@ const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
     }
 };
 
+const getForJwtVerification = (creds: I_JwtVerification) => {
+    const { id, email } = creds;
+    return new Promise((resolve, reject) => {
+        const userData = data.find((item) => item.id === id && item.email === email);
+        resolve(userData);
+    });
+};
+
 export const UserModels = {
     get,
     create,
     update,
     remove,
     getAll,
+    getForJwtVerification,
 };

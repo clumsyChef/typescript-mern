@@ -35,6 +35,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
                     });
                     res.status(200).json({ status: true, message: `You are now logged in as ${email}` });
                 } else {
+                    // create a error logger that "the token secret was not found"
                     res.status(401).json({ status: false, message: "Something went wrong." });
                 }
             } else {

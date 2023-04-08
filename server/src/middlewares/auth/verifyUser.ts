@@ -13,11 +13,14 @@ const verifyToken = (token: string, secret: string) => {
         decoded = error.message;
     }
 
-    const message = {
+    const message: any = {
         expired: typeof decoded === "string" && decoded.includes("jwt expired"),
         noJwt: typeof decoded === "string" && decoded === "jwt must be provided",
-        value: decoded,
     };
+
+    if (!message.expired && !message.noJwt) {
+        message.value = decoded;
+    }
 
     return message;
 };
@@ -29,34 +32,55 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
         process.env.REFRESH_TOKEN_SECRET as string,
     ];
 
-    if (!refreshToken) return next();
-
-    const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
-    if (verifiedRefresh.noJwt || verifiedRefresh.expired) return next();
-    const matchUser = await UserModels.getAll({ refreshToken: verifiedRefresh.value });
-    if (!matchUser?.[0]) {
-        const findUserWithEmail = await UserModels.getAll({ email: verifiedRefresh.value.email });
-        if (findUserWithEmail?.[0]) {
-            const newData = { ...findUserWithEmail[0], refreshToken: null };
-            const savedData = await UserModels.update(newData);
+    if (accessToken && refreshToken) {
+        const verifiedAccess = verifyToken(accessToken, accessSecret);
+        if (verifiedAccess.value) {
+            // @ts-ignore
+            req.user = verifiedAccess.value;
+        } else {
+            const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
+            if (verifiedRefresh.value) {
+            } else if (verifiedRefresh.expired) {
+                const userData = await UserModels.getAll({ refreshToken });
+                if (userData?.length) {
+                    const newData = { ...userData[0] };
+                } else {
+                    //
+                }
+            }
         }
+    } else {
         return next();
     }
 
-    if (!accessToken) {
-        const { email, id } = matchUser[0];
-        accessToken = jwt.sign({ email, id }, accessSecret, {
-            expiresIn: "10s",
-        });
+    // if (!refreshToken) return next();
 
-        res.cookie("accessToken", accessToken, {
-            maxAge: 10 * 1000,
-            httpOnly: true,
-        });
-    }
+    // const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
+    // if (verifiedRefresh.noJwt || verifiedRefresh.expired) return next();
+    // const matchUser = await UserModels.getAll({ refreshToken: verifiedRefresh.value });
+    // if (!matchUser?.[0]) {
+    //     const findUserWithEmail = await UserModels.getAll({ email: verifiedRefresh.value.email });
+    //     if (findUserWithEmail?.[0]) {
+    //         const newData = { ...findUserWithEmail[0], refreshToken: null };
+    //         const savedData = await UserModels.update(newData);
+    //     }
+    //     return next();
+    // }
 
-    const verifiedAccess = verifyToken(accessToken, accessSecret);
-    if (verifiedAccess.noJwt || verifiedAccess.expired) return next();
+    // if (!accessToken) {
+    //     const { email, id } = matchUser[0];
+    //     accessToken = jwt.sign({ email, id }, accessSecret, {
+    //         expiresIn: "10s",
+    //     });
+
+    //     res.cookie("accessToken", accessToken, {
+    //         maxAge: 10 * 1000,
+    //         httpOnly: true,
+    //     });
+    // }
+
+    // const verifiedAccess = verifyToken(accessToken, accessSecret);
+    // if (verifiedAccess.noJwt || verifiedAccess.expired) return next();
 
     //else {
     // const { email, id } = matchUser[0];

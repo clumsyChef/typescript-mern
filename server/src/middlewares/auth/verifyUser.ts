@@ -14,7 +14,8 @@ const verifyToken = (token: string, secret: string) => {
     }
 
     const message = {
-        jwtExp: typeof decoded === "string" && decoded.includes("jwt expired"),
+        expired: typeof decoded === "string" && decoded.includes("jwt expired"),
+        noJwt: typeof decoded === "string" && decoded === "jwt must be provided",
         value: decoded,
     };
 
@@ -22,117 +23,51 @@ const verifyToken = (token: string, secret: string) => {
 };
 
 export const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken, refreshToken } = req.cookies;
+    let { accessToken, refreshToken } = req.cookies;
+    const [accessSecret, refreshSecret] = [
+        process.env.ACCESS_TOKEN_SECRET as string,
+        process.env.REFRESH_TOKEN_SECRET as string,
+    ];
+
     if (!refreshToken) return next();
-    const [accessSecret, refreshSecret] = [process.env.ACCESS_TOKEN_SECRET, process.env.REFRESH_TOKEN_SECRET];
-    if (accessSecret && refreshSecret) {
-        const [access, refresh] = [verifyToken(accessToken, accessSecret), verifyToken(refreshToken, refreshSecret)];
-    } else {
-        // create a error logger that "the token secret was not found"
-        return res.json({ status: false, message: `Something went wrong` });
+
+    const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
+    if (verifiedRefresh.noJwt || verifiedRefresh.expired) return next();
+    const matchUser = await UserModels.getAll({ refreshToken: verifiedRefresh.value });
+    if (!matchUser?.[0]) {
+        const findUserWithEmail = await UserModels.getAll({ email: verifiedRefresh.value.email });
+        if (findUserWithEmail?.[0]) {
+            const newData = { ...findUserWithEmail[0], refreshToken: null };
+            const savedData = await UserModels.update(newData);
+        }
+        return next();
     }
-    // if (!accessToken) {
-    //     let decodedRefresh;
-    //     try {
-    //         decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET ?? "");
-    //     } catch (err: any) {
-    //         decodedRefresh = err.message;
-    //     }
 
-    //     if (typeof decodedRefresh === "string" && decodedRefresh.includes("jwt expired")) return next();
+    if (!accessToken) {
+        const { email, id } = matchUser[0];
+        accessToken = jwt.sign({ email, id }, accessSecret, {
+            expiresIn: "10s",
+        });
 
-    //     const findWithId = await UserModels.get(decodedRefresh.id);
-    //     const findWithEmail = await UserModels.getAll({ email: decodedRefresh.email });
-    //     let newDataToSave;
-    //     if (!findWithId || !findWithEmail?.[0]) {
-    //         newDataToSave = findWithId ?? findWithEmail?.[0];
-    //     }
+        res.cookie("accessToken", accessToken, {
+            maxAge: 10 * 1000,
+            httpOnly: true,
+        });
+    }
 
-    //     if (newDataToSave) {
-    //         newDataToSave = { ...newDataToSave, refreshToken: null };
-    //         const userData = await UserModels.update(newDataToSave);
-    //         return next();
-    //     } else {
-    //         return next();
-    //     }
+    const verifiedAccess = verifyToken(accessToken, accessSecret);
+    if (verifiedAccess.noJwt || verifiedAccess.expired) return next();
 
-    //     // let newDataToSave;
-    //     // if (!findWithId && findWithEmail?.[0]) {
-    //     //     newDataToSave = { ...findWithEmail[0], refreshToken: null };
-    //     // } else if (findWithId && !findWithEmail?.[0]) {
-    //     //     newDataToSave = { ...findWithId, refreshToken: null };
-    //     // }
+    //else {
+    // const { email, id } = matchUser[0];
+    // const newAccessToken = jwt.sign({ email, id }, accessSecret, {
+    //     expiresIn: "10s",
+    // });
 
-    //     // if (newDataToSave) {
-    //     //     const user = await UserModels.update(newDataToSave);
-    //     // }
-
-    //     // const cred = {
-    //     //     id: decodedRefresh.id,
-    //     //     email: decodedRefresh.email,
-    //     // };
-    //     // const user = await UserModels.getForJwtVerification(cred);
-
-    //     // if (!user) {
-
-    //     // }
-
-    //     // someone manipulated with the token
-    //     // if (!foundUser) {
-    //     //     const newData = { ...userWithEmail, refreshToken: null };
-    //     // }
-    // } else {
-    //     // let decodedAcc
-    //     // req.user =
-    // }
+    // res.cookie("accessToken", newAccessToken, {
+    //     maxAge: 10 * 1000,
+    //     httpOnly: true,
+    // });
+    // console.log("NEW ACCESS TOKEN GENERATED");
+    //}
 };
-// export const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
-//     const { accessToken, refreshToken } = req.cookies;
-//     console.log(`Refresh: ${refreshToken ? "YES" : "NO"},\nAccess: ${accessToken ? "YES" : "NO"}`);
-//     if (!refreshToken) return next();
-
-//     let decodedAccess;
-//     try {
-//         decodedAccess = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET ?? "");
-//     } catch (err: any) {
-//         decodedAccess = err.message;
-//     }
-
-//     console.log(decodedAccess);
-//     if (typeof decodedAccess === "string" && decodedAccess.includes("jwt expired")) {
-//         let decodedRefresh;
-//         try {
-//             decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET ?? "");
-//         } catch (err: any) {
-//             decodedRefresh = err.message;
-//         }
-//         if (typeof decodedRefresh === "string" && decodedRefresh.includes("jwt expired")) {
-//             return next();
-//         } else {
-//             const { email, id } = decodedRefresh;
-//             const userData = await UserModels.get(id);
-//             if (!userData || !userData.refreshToken) return next();
-
-//             const newAccessToken = jwt.sign({ email, id }, process.env.ACCESS_TOKEN_SECRET ?? "", {
-//                 expiresIn: "10s",
-//             });
-
-//             res.cookie("accessToken", newAccessToken, {
-//                 maxAge: 10 * 1000,
-//                 httpOnly: true,
-//             });
-
-//             console.log("NEW ACCESS TOKEN GENERATED");
-
-//             let againAccess = jwt.verify(newAccessToken, process.env.ACCESS_TOKEN_SECRET ?? "");
-//             // @ts-ignore
-//             req.user = againAccess;
-
-//             return next();
-//         }
-//     } else {
-//         // @ts-ignore
-//         req.user = decodedAccess;
-//         return next();
-//     }
-// };

@@ -4,6 +4,7 @@ export interface I_GetParams {
     email?: string;
     fullName?: string;
     mobile?: string;
+    refreshToken?: string;
 }
 
 export interface I_UserData {

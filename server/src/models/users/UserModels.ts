@@ -45,7 +45,7 @@ const remove = (id: string) => {
 
 const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
     if (getParams) {
-        const { username, email, fullName, mobile } = getParams;
+        const { username, email, fullName, mobile, refreshToken } = getParams;
         return new Promise((resolve, reject) => {
             const requiredData = data?.filter((item, index) => {
                 if (username && item.username.toLowerCase().includes(username?.toLowerCase())) return item;
@@ -55,6 +55,8 @@ const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
                 if (fullName && item.fullName.toLowerCase().includes(fullName?.toLowerCase())) return item;
 
                 if (mobile && item.mobile.toLowerCase().includes(mobile?.toLowerCase())) return item;
+
+                if (refreshToken && item.refreshToken === refreshToken) return item;
             });
 
             resolve(requiredData);

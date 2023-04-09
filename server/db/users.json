@@ -6,7 +6,7 @@
         "email": "sarthak@02.com",
         "mobile": "1234-1234-23",
         "password": "$2b$10$ZAYNnKNhXbDEA9TcrSow4OHOvK4il5sIbROY4s6r.C8u6CWak.WbC",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFmNmEzMWY2LWY5OGItNGUwZS1hMzRiLWI4MmNjMjM5NjI2ZiIsImVtYWlsIjoic2FydGhha0AwMi5jb20iLCJpYXQiOjE2ODA4NzIwNTIsImV4cCI6MTY4MDk1ODQ1Mn0.22YTkDByS3JaOBC0Sw3q-qF0f500oa6AUzzLg3l4Po0"
+        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFmNmEzMWY2LWY5OGItNGUwZS1hMzRiLWI4MmNjMjM5NjI2ZiIsImVtYWlsIjoic2FydGhha0AwMi5jb20iLCJpYXQiOjE2ODEwMjMyNjgsImV4cCI6MTY4MTEwOTY2OH0.t2sEdIjUYzb4XHf-6kfqZpNfh1f7cnWi3R7cMiacrTo"
     },
     {
         "id": "6afe7ce1-f5cf-48e1-a73f-acbf9fdc8d00",
@@ -15,6 +15,6 @@
         "email": "sarthak@03.com",
         "mobile": "69696-69696",
         "password": "$2b$10$53zLO1.uaVNXX6viET80K.2Y65TxQAqDIBXxirHU11zVC2SekDzBG",
-        "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhcnRoYWtAMDMuY29tIiwiaWF0IjoxNjc5MjMzMDU1LCJleHAiOjE2NzkzMTk0NTV9.2fYLURG0MUizqtIV1De29OT5TL5H0zIm1uqgeb6-fPs"
+        "refreshToken": null
     }
 ]

@@ -6,7 +6,7 @@ export const rootRouter: Router = express.Router();
 rootRouter.get("^/$|index(.html)?", (req: Request, res: Response, next: NextFunction) => {
     // @ts-ignore
     if (req.user) {
-        return res.json({ message: "Home Page" });
+        return res.json({ message: "Yaaaaaay Data" });
     }
 
     return next();

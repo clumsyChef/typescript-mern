@@ -23,14 +23,14 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
                     const changedData = await UserModels.update(dataWithToken);
                     res.cookie("accessToken", accessToken, {
                         httpOnly: true,
-                        sameSite: "strict",
-                        secure: true,
+                        // sameSite: "none",
+                        // secure: true,
                         maxAge: 10 * 1000,
                     });
                     res.cookie("refreshToken", refreshToken, {
                         httpOnly: true,
-                        sameSite: "strict",
-                        secure: true,
+                        // sameSite: "none",
+                        // secure: true,
                         maxAge: 24 * 60 * 60 * 1000,
                     });
                     res.status(200).json({ status: true, message: `You are now logged in as ${email}` });

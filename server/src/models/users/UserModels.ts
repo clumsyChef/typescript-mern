@@ -55,6 +55,7 @@ const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
                 if (fullName && item.fullName.toLowerCase().includes(fullName?.toLowerCase())) return item;
 
                 if (mobile && item.mobile.toLowerCase().includes(mobile?.toLowerCase())) return item;
+                console.log(`Params -> ${refreshToken}\nDB -> ${item.refreshToken}`);
 
                 if (refreshToken && item.refreshToken === refreshToken) return item;
             });

@@ -15,6 +15,8 @@ dotenv.config();
 const app = express();
 const PORT: string = process.env.BACKEND_PORT || "3500";
 
+// remove the code below afterwards
+app.disable("view cache");
 // calling middlewares
 app.use(logger);
 app.use(cors(corsOptions));

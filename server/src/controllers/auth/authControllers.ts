@@ -56,7 +56,23 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
 };
 
 const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    //
+    const { refreshToken } = req.cookies;
+    const userData = await UserModels.getAll({ refreshToken });
+    if (userData?.[0]) {
+        const newUserData = { ...userData[0], refreshToken: null };
+        await UserModels.update(newUserData);
+    }
+    res.cookie("accessToken", "", {
+        maxAge: 0,
+        httpOnly: true,
+    });
+
+    res.cookie("refreshToken", "", {
+        maxAge: 0,
+        httpOnly: true,
+    });
+
+    return next();
 };
 
 export const AuthController = { login, logout };

@@ -6,6 +6,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    // @ts-ignore
+    if (req.user) {
+        res.json({ status: false, message: "Already Logged In" });
+        return;
+    }
     const { email, password } = req.body;
     if (email && password) {
         const userData = await UserModels.getAll({ email });
@@ -13,19 +18,19 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
             const match = await bcrypt.compare(password, userData[0].password);
             if (match) {
                 const [accessSecret, refreshSecret] = [
-                    process.env.ACCESS_TOKEN_SECRET,
-                    process.env.REFRESH_TOKEN_SECRET,
+                    process.env.ACCESS_TOKEN_SECRET as string,
+                    process.env.REFRESH_TOKEN_SECRET as string,
                 ];
                 if (accessSecret && refreshSecret) {
                     const accessToken = jwt.sign({ id: userData[0].id, email }, accessSecret, { expiresIn: "10s" });
-                    const refreshToken = jwt.sign({ id: userData[0].id, email }, refreshSecret, { expiresIn: "1d" });
+                    const refreshToken = jwt.sign({ id: userData[0].id, email }, refreshSecret, { expiresIn: "30s" });
                     const dataWithToken = { ...userData[0], refreshToken };
                     const changedData = await UserModels.update(dataWithToken);
                     res.cookie("accessToken", accessToken, {
                         httpOnly: true,
                         // sameSite: "none",
                         // secure: true,
-                        maxAge: 10 * 1000,
+                        maxAge: 20 * 1000,
                     });
                     res.cookie("refreshToken", refreshToken, {
                         httpOnly: true,

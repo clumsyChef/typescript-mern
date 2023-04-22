@@ -47,10 +47,10 @@ const getAll = (getParams?: I_GetParams): Promise<I_UserData[]> => {
     if (getParams) {
         const { username, email, fullName, mobile, refreshToken } = getParams;
         return new Promise((resolve, reject) => {
-            if (refreshToken) {
-                console.log("refr -.", data);
-            }
-            const requiredData = data?.filter((item, index) => {
+            const mainData = require("../../../db/users.json");
+            console.log("asdf -->", mainData);
+            // @ts-ignore
+            const requiredData = mainData?.filter((item, index) => {
                 if (username && item.username.toLowerCase().includes(username?.toLowerCase())) return item;
 
                 if (email && item.email.toLowerCase().includes(email?.toLowerCase())) return item;

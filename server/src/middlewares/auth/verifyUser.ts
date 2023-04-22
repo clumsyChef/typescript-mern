@@ -40,8 +40,7 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
         } else {
             const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
             const userData = await UserModels.getAll({ refreshToken });
-            console.log("userData -> ", verifiedRefresh);
-            if (verifiedRefresh.value) {
+            if (verifiedRefresh.value && userData?.length) {
                 const tokenData = { id: userData[0].id, email: userData[0].email };
                 const newAccessToken = jwt.sign(tokenData, accessSecret, {
                     expiresIn: "10s",

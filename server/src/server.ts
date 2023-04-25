@@ -1,6 +1,8 @@
+// getting environment variables
+import dotenv from "dotenv";
+
 import express from "express";
 import type { Request, Response } from "express";
-import dotenv from "dotenv";
 import { logger } from "./middlewares";
 import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
@@ -9,9 +11,9 @@ import { rootRouter, userRouter, authRouter } from "./routes";
 import { verifyUser } from "./middlewares/auth/verifyUser";
 import cookieParser from "cookie-parser";
 
-// getting environment variables
-dotenv.config();
+import { Collection, Db, MongoClient, MongoClientOptions } from "mongodb";
 
+dotenv.config();
 const app = express();
 const PORT: string = process.env.BACKEND_PORT || "3500";
 
@@ -51,6 +53,66 @@ app.all("*", (req: Request, res: Response) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on the port: ${PORT}`);
-});
+// const startServer = async () => {
+//     try {
+//         const database = client.db("BlogDB");
+//         const users = database.
+//     }
+// }
+
+// const MongoClient = require('mongodb').MongoClient;
+// async function getConnections(url,db){
+//     return new Promise((resolve,reject)=>{
+//         MongoClient.connect(url, { useUnifiedTopology: true },function(err, client) {
+//             if(err) { console.error(err)
+//                 resolve(false);
+//             }
+//             else{
+//                 resolve(client.db(db));
+//             }
+//         })
+//     });
+// }
+
+const createMongoConnection = async () => {
+    const mongoOptions: MongoClientOptions = {
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+    } as MongoClientOptions;
+
+    // maybe put below in a variable and then return it ??
+    return await new Promise((resolve, reject) => {
+        try {
+            const client: MongoClient = new MongoClient(process.env.MONGO_CONNECTION_URI as string, mongoOptions);
+            const database: Db = client.db("BlogDB");
+            const collection = database.collection("users");
+            resolve(collection);
+        } catch (err) {
+            resolve(false);
+        }
+    });
+};
+
+const StartServer = async () => {
+    const collection = (await createMongoConnection()) as Collection<Document>;
+    if (collection) {
+        app.listen(PORT, () => {
+            console.log(`Server is running on the port: ${PORT}`);
+        });
+    } else {
+        console.log("MONGO CONNECTION FAILED");
+    }
+};
+
+StartServer();
+
+// module.exports = async function(){
+//     let dbs      = [];
+//     dbs['db1']     = await getConnections('mongodb://localhost:27017/','db1');
+//     dbs['db2']     = await getConnections('mongodb://localhost:27017/','db2');
+//     return dbs;
+// };
+
+// app.listen(PORT, () => {
+//     console.log(`Server is running on the port: ${PORT}`);
+// });

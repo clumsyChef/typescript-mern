@@ -3,8 +3,6 @@ import type { Response, Request, NextFunction } from "express";
 import dotenv from "dotenv";
 import { UserModels } from "../../models";
 
-dotenv.config();
-
 const verifyToken = (token: string, secret: string) => {
     let decoded;
     try {

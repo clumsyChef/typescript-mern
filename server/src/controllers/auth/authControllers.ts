@@ -3,7 +3,6 @@ import type { Request, Response, NextFunction } from "express";
 import { UserModels } from "../../models";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-dotenv.config();
 
 const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // @ts-ignore

@@ -38,32 +38,33 @@ const get = async (req: Request, res: Response, next: NextFunction): Promise<voi
 
 const create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { username, fullName, email, mobile, password } = req.body;
+
     if (username && fullName && email && mobile) {
         const userData: I_UserData[] = await UserModels.getAll({ email });
-
+        console.log("asdf -->", userData);
         if (userData?.length) {
-            res.status(400).json({
-                status: false,
-                message: "Email already exists.",
-            });
+            // res.status(400).json({
+            //     status: false,
+            //     message: "Email already exists.",
+            // });
         } else {
-            const hashedPass = await bcrypt.hash(password, 10);
-            const dataToSave = {
-                id: uuidv4(),
-                username,
-                fullName,
-                email,
-                mobile,
-                password: hashedPass,
-                refreshToken: null,
-            };
-            const createdUser = await UserModels.create(dataToSave);
-            if (createdUser) {
-                res.status(201).json({
-                    status: true,
-                    message: `Account with username "${username}" created by ${fullName}.`,
-                });
-            }
+            // const hashedPass = await bcrypt.hash(password, 10);
+            // const dataToSave = {
+            //     id: uuidv4(),
+            //     username,
+            //     fullName,
+            //     email,
+            //     mobile,
+            //     password: hashedPass,
+            //     refreshToken: null,
+            // };
+            // const createdUser = await UserModels.create(dataToSave);
+            // if (createdUser) {
+            //     res.status(201).json({
+            //         status: true,
+            //         message: `Account with username "${username}" created by ${fullName}.`,
+            //     });
+            // }
         }
     } else {
         res.status(401).json({

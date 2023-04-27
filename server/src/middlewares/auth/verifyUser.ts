@@ -1,6 +1,5 @@
 import jwt, { verify } from "jsonwebtoken";
 import type { Response, Request, NextFunction } from "express";
-import dotenv from "dotenv";
 import { UserModels } from "../../models";
 
 const verifyToken = (token: string, secret: string) => {

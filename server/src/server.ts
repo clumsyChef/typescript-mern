@@ -24,7 +24,7 @@ app.use(logger);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(verifyUser);
+// app.use(verifyUser);
 
 // app.use(
 //     session({
@@ -74,7 +74,7 @@ app.all("*", (req: Request, res: Response) => {
 //     });
 // }
 
-const createMongoConnection = async () => {
+export const createMongoConnection = async () => {
     const mongoOptions: MongoClientOptions = {
         useUnifiedTopology: true,
         useNewUrlParser: true,
@@ -93,12 +93,18 @@ const createMongoConnection = async () => {
     });
 };
 
+export let userCollection: Collection<Document>;
+
 const StartServer = async () => {
     const collection = (await createMongoConnection()) as Collection<Document>;
+    // const x = await collection.find({ email: "sarthak" });
+    // console.log("asd -->", x);
     if (collection) {
+        userCollection = collection;
         app.listen(PORT, () => {
             console.log(`Server is running on the port: ${PORT}`);
         });
+        return collection;
     } else {
         console.log("MONGO CONNECTION FAILED");
     }

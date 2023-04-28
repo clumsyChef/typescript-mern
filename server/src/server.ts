@@ -93,7 +93,7 @@ export const createMongoConnection = async () => {
     });
 };
 
-export let userCollection: Collection<Document>;
+export let userCollection: any;
 
 const StartServer = async () => {
     const collection = (await createMongoConnection()) as Collection<Document>;

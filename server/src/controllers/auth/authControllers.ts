@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import type { Request, Response, NextFunction } from "express";
 import { UserModels } from "../../models";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 
 const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // @ts-ignore

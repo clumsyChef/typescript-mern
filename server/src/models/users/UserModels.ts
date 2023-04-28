@@ -10,12 +10,21 @@ const get = async (id: string): Promise<I_UserData | undefined> => {
     });
 };
 
-const create = async (dataToSave: I_UserData) => {
-    const newData = [...data, dataToSave];
-    const newDataAsStr: string = JSON.stringify(newData, null, 4);
-    return new Promise((resolve, reject) => {
-        appendToUsers(newDataAsStr);
-        resolve(true);
+const create = async (dataToSave: I_UserData): Promise<{ status: boolean; message?: string }> => {
+    // const newData = [...data, dataToSave];
+    // const newDataAsStr: string = JSON.stringify(newData, null, 4);
+    return new Promise(async (resolve, reject) => {
+        // appendToUsers(newDataAsStr);
+        try {
+            const collections = await userCollection.insertOne(dataToSave);
+            resolve({ status: true });
+        } catch (err) {
+            if (err instanceof Error) {
+                resolve({ status: false, message: err.message });
+            } else {
+                resolve({ status: false, message: "Unexpected Error." });
+            }
+        }
     });
 };
 
@@ -50,7 +59,11 @@ const getAll = async (getParams?: I_GetParams): Promise<I_UserData[]> => {
         return new Promise(async (resolve, reject) => {
             const mainData = userCollection;
             // @ts-ignore
-            const requiredData: any = await mainData.find({ email }).toArray();
+            // const requiredData: any = await mainData.find({ email }).toArray();
+            const requiredData: any = await mainData
+                .find({ $or: [{ username }, { email }, { fullName }, { mobile }, { refreshToken }] })
+                .toArray();
+
             // const requiredData = mainData?.find({email: email})?.filter((item, index) => {
             //     if (username && item.username.toLowerCase().includes(username?.toLowerCase())) return item;
 

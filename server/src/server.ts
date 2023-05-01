@@ -35,7 +35,7 @@ app.use(cookieParser());
 //     })
 // );
 
-// Routes and stuff
+// Routes
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/auth", authRouter);

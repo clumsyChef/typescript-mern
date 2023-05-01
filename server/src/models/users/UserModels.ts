@@ -1,103 +1,104 @@
-import type { I_GetParams, I_UserData, I_JwtVerification } from "./I_Users";
 import data from "../../../db/users.json";
 import { appendToUsers } from "../../utils/dataManipulation";
 import { userCollection } from "../../server";
 
-const get = async (id: string): Promise<I_UserData | undefined> => {
-    return new Promise((resolve, reject) => {
-        const userData = data.find((item: I_UserData) => item.id === id);
-        resolve(userData);
-    });
-};
+// const get = async (id: string): Promise<I_UserData | undefined> => {
+// 	return new Promise((resolve, reject) => {
+// 		const userData = data.find((item: I_UserData) => item.id === id);
+// 		resolve(userData);
+// 	});
+// };
 
-const create = async (dataToSave: I_UserData): Promise<{ status: boolean; message?: string }> => {
-    // const newData = [...data, dataToSave];
-    // const newDataAsStr: string = JSON.stringify(newData, null, 4);
-    return new Promise(async (resolve, reject) => {
-        // appendToUsers(newDataAsStr);
-        try {
-            const collections = await userCollection.insertOne(dataToSave);
-            resolve({ status: true });
-        } catch (err) {
-            if (err instanceof Error) {
-                resolve({ status: false, message: err.message });
-            } else {
-                resolve({ status: false, message: "Unexpected Error." });
-            }
-        }
-    });
+const create = async (dataToSave: I_User): Promise<I_Success_Or_Error> => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			await userCollection.insertOne(dataToSave);
+			resolve({ status: true, message: `User created with Email: ${dataToSave.email}` });
+		} catch (err) {
+			if (err instanceof Error) {
+				resolve({ status: false, message: err.message });
+			} else {
+				resolve({ status: false, message: "Unexpected Error." });
+			}
+		}
+	});
 };
 
 const update = async (dataToSave: I_UserData) => {
-    const changedData: I_UserData[] = data?.map((item) => {
-        return item.id === dataToSave.id ? dataToSave : item;
-    });
-
-    const newDataAsStr: string = JSON.stringify(changedData, null, 4);
-
-    return new Promise((resolve, reject) => {
-        appendToUsers(newDataAsStr);
-        resolve(dataToSave);
-    });
+	return new Promise(async (resolve, reject) => {
+		try {
+			await userCollection.updateOne({ id: dataToSave.id }, { $set: dataToSave });
+		} catch (err) {
+			if (err instanceof Error) {
+				resolve({ status: false, message: err.message });
+			} else {
+				resolve({ status: false, message: "Unexpected Error." });
+			}
+		}
+		resolve(dataToSave);
+	});
 };
 
 const remove = async (id: string) => {
-    const changedData: I_UserData[] = data?.filter((item) => {
-        if (item.id !== id) return item;
-    });
+	const changedData: I_UserData[] = data?.filter((item) => {
+		if (item.id !== id) return item;
+	});
 
-    const newDataAsStr: string = JSON.stringify(changedData, null, 4);
-    return new Promise((resolve, reject) => {
-        appendToUsers(newDataAsStr);
-        resolve(id);
-    });
+	const newDataAsStr: string = JSON.stringify(changedData, null, 4);
+	return new Promise((resolve, reject) => {
+		appendToUsers(newDataAsStr);
+		resolve(id);
+	});
 };
 
-const getAll = async (getParams?: I_GetParams): Promise<I_UserData[]> => {
-    if (getParams) {
-        const { username, email, fullName, mobile, refreshToken } = getParams;
-        return new Promise(async (resolve, reject) => {
-            const mainData = userCollection;
-            // @ts-ignore
-            // const requiredData: any = await mainData.find({ email }).toArray();
-            const requiredData: any = await mainData
-                .find({ $or: [{ username }, { email }, { fullName }, { mobile }, { refreshToken }] })
-                .toArray();
+const getAll = async (getParams?: I_Params): Promise<I_UserData[] | I_Success_Or_Error> => {
+	if (getParams) {
+		const { username, email, fullName, mobile, refreshToken } = getParams;
+		return new Promise(async (resolve, reject) => {
+			try {
+				const requiredData: any = await userCollection.find({
+					$or: [{ username }, { email }, { fullName }, { mobile }, { refreshToken }],
+				});
+				// .toArray();
 
-            // const requiredData = mainData?.find({email: email})?.filter((item, index) => {
-            //     if (username && item.username.toLowerCase().includes(username?.toLowerCase())) return item;
-
-            //     if (email && item.email.toLowerCase().includes(email?.toLowerCase())) return item;
-
-            //     if (fullName && item.fullName.toLowerCase().includes(fullName?.toLowerCase())) return item;
-
-            //     if (mobile && item.mobile.toLowerCase().includes(mobile?.toLowerCase())) return item;
-
-            //     if (refreshToken && item.refreshToken === refreshToken) return item;
-            // });
-
-            resolve(requiredData);
-        });
-    } else {
-        return new Promise((resolve, reject) => {
-            resolve(data);
-        });
-    }
+				resolve({ status: true, data: [requiredData] });
+			} catch (err) {
+				if (err instanceof Error) {
+					resolve({ status: false, error: err.message });
+				} else {
+					resolve({ status: false, error: "Unexpected Error." });
+				}
+			}
+		});
+	} else {
+		return new Promise((resolve, reject) => {
+			try {
+				const requiredData: any = userCollection.find().toArray();
+				resolve(requiredData);
+			} catch (err) {
+				if (err instanceof Error) {
+					resolve({ status: false, error: err.message });
+				} else {
+					resolve({ status: false, error: "Unexpected Error." });
+				}
+			}
+		});
+	}
 };
 
 const getForJwtVerification = async (creds: I_JwtVerification) => {
-    const { id, email } = creds;
-    return new Promise((resolve, reject) => {
-        const userData = data.find((item) => item.id === id && item.email === email);
-        resolve(userData);
-    });
+	const { id, email } = creds;
+	return new Promise((resolve, reject) => {
+		const userData = data.find((item) => item.id === id && item.email === email);
+		resolve(userData);
+	});
 };
 
 export const UserModels = {
-    get,
-    create,
-    update,
-    remove,
-    getAll,
-    getForJwtVerification,
+	// get,
+	create,
+	update,
+	remove,
+	getAll,
+	getForJwtVerification,
 };

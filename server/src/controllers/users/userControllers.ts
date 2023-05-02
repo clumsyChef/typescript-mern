@@ -42,32 +42,33 @@ const create = async (req: Request, res: Response, next: NextFunction): Promise<
 
 	if (username && fullName && email && mobile) {
 		const userData: I_UserData[] = await UserModels.getAll({ email });
-		// if (userData?.length) {
-		// 	res.status(400).json({
-		// 		status: false,
-		// 		message: "Email already exists.",
-		// 	});
-		// } else {
-		// 	const hashedPass = await bcrypt.hash(password, 10);
-		// 	const dataToSave = {
-		// 		id: uuidv4(),
-		// 		username,
-		// 		fullName,
-		// 		email,
-		// 		mobile,
-		// 		password: hashedPass,
-		// 		refreshToken: null,
-		// 	};
-		// 	const createdUser = await UserModels.create(dataToSave);
-		// 	if (createdUser.status) {
-		// 		res.status(201).json({
-		// 			status: true,
-		// 			message: `Account with username "${username}" created by ${fullName}.`,
-		// 		});
-		// 	} else {
-		// 		res.status(500).json({ status: false, message: "Data cannot be saved" });
-		// 	}
-		// }
+		if (!userData.status) return res.json(userData);
+		if (userData.status && userData?.data?.length) {
+			res.status(400).json({
+				status: false,
+				message: "Email already exists.",
+			});
+		} else {
+			const hashedPass = await bcrypt.hash(password, 10);
+			const dataToSave = {
+				id: uuidv4(),
+				username,
+				fullName,
+				email,
+				mobile,
+				password: hashedPass,
+				refreshToken: null,
+			};
+			const createdUser = await UserModels.create(dataToSave);
+			if (createdUser.status) {
+				return res.status(201).json({
+					status: true,
+					message: `Account with username "${username}" created by ${fullName}.`,
+				});
+			} else {
+				return res.status(500).json({ status: false, message: "Data cannot be saved" });
+			}
+		}
 	} else {
 		res.status(401).json({
 			status: false,

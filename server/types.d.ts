@@ -1,4 +1,4 @@
-interface I_Params {
+export interface I_Params {
 	id?: string;
 	username?: string;
 	email?: string;
@@ -7,7 +7,7 @@ interface I_Params {
 	refreshToken?: string;
 }
 
-interface I_User {
+export interface I_User {
 	id: string;
 	username: string;
 	fullName: string;
@@ -17,30 +17,20 @@ interface I_User {
 	refreshToken?: string | null;
 }
 
-interface I_JwtVerification {
+export interface I_JwtVerification {
 	id: string;
 	email: string;
 }
 
-// interface I_Error {
-// 	status: false;
-// 	error: string;
-// }
-
-// interface I_Success {
-// 	status: true;
-// 	message: string;
-// }
-
-interface I_Success_Or_Error {
+export interface I_Success_Or_Error {
 	status: boolean;
 	error?: string;
 	message?: string;
 }
 
-interface I_UserData {
+export interface I_UserData {
 	status: true;
-	data: I_UserData;
+	data: I_User[];
 }
 
 // interface I_

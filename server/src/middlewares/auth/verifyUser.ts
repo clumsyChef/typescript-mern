@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import jwt, { verify } from "jsonwebtoken";
 import type { Response, Request, NextFunction } from "express";
 import { UserModels } from "../../models";

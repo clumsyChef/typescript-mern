@@ -32,15 +32,18 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<a
 						});
 						const dataWithToken: I_User = { ...user, refreshToken };
 						await UserModels.update(dataWithToken);
-						// res.cookie("accessToken", accessToken, {
-						// 	httpOnly: true,
-						// 	maxAge: 20 * 1000,
-						// });
-						// res.cookie("refreshToken", refreshToken, {
-						// 	httpOnly: true,
-						// 	maxAge: 24 * 60 * 60 * 1000,
-						// });
-						return res.status(200).json({ status: true, message: `You are now logged in as ${email}` });
+						res.cookie("accessToken", accessToken, {
+							httpOnly: true,
+							maxAge: 20 * 1000,
+						});
+						res.cookie("refreshToken", refreshToken, {
+							httpOnly: true,
+							maxAge: 24 * 60 * 60 * 1000,
+						});
+						return res.status(200).json({
+							status: true,
+							message: `You are now logged in as ${email}. Redirect user from here to somewhere.`,
+						});
 					} else {
 						// create a error logger that "the token secret was not found"
 						return res.status(401).json({ status: false, message: "Something went wrong." });
@@ -66,11 +69,12 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<a
 const logout = async (req: Request, res: Response, next: NextFunction): Promise<Record<string, any>> => {
 	const { refreshToken } = req.cookies;
 	const userData = await UserModels.getAll({ refreshToken });
-	// @ts-ignore
-	if (userData?.[0]) {
-		// @ts-ignore
-		const newUserData = { ...userData[0], refreshToken: null };
-		await UserModels.update(newUserData);
+	if (userData.status) {
+		const user: I_User = userData.data[0];
+		if (user) {
+			const newUserData = { ...user, refreshToken: null };
+			await UserModels.update(newUserData);
+		}
 	}
 	res.cookie("accessToken", "", {
 		maxAge: 0,

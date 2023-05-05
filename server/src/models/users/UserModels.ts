@@ -1,7 +1,7 @@
 import data from "../../../db/users.json";
 import { appendToUsers } from "../../utils/dataManipulation";
 import { userCollection } from "../../server";
-import type { I_User, I_Success_Or_Error, I_Params, I_UserData, I_JwtVerification } from "../../../types";
+import type { I_User, I_Error, I_Success, I_Params, I_UserData, I_JwtVerification } from "../../../types";
 
 // const get = async (id: string): Promise<I_UserData | undefined> => {
 // 	return new Promise((resolve, reject) => {
@@ -10,16 +10,16 @@ import type { I_User, I_Success_Or_Error, I_Params, I_UserData, I_JwtVerificatio
 // 	});
 // };
 
-const create = async (dataToSave: I_User): Promise<I_Success_Or_Error> => {
+const create = async (dataToSave: I_User): Promise<I_Error | I_Success> => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			await userCollection.insertOne(dataToSave);
 			resolve({ status: true, message: `User created with Email: ${dataToSave.email}` });
 		} catch (err) {
 			if (err instanceof Error) {
-				resolve({ status: false, message: err.message });
+				resolve({ status: false, error: err.message });
 			} else {
-				resolve({ status: false, message: "Unexpected Error." });
+				resolve({ status: false, error: "Unexpected Error." });
 			}
 		}
 	});
@@ -52,7 +52,7 @@ const remove = async (id: string) => {
 	});
 };
 
-const getAll = async (getParams?: I_Params): Promise<I_UserData | I_Success_Or_Error> => {
+const getAll = async (getParams?: I_Params): Promise<I_UserData | I_Error> => {
 	if (getParams) {
 		const { username, email, fullName, mobile, refreshToken } = getParams;
 		return new Promise(async (resolve, reject) => {

@@ -22,15 +22,17 @@ export interface I_JwtVerification {
 	email: string;
 }
 
-export interface I_Success_Or_Error {
-	status: boolean;
-	error?: string;
-	message?: string;
+export interface I_Error {
+	status: false;
+	error: string;
+}
+
+export interface I_Success {
+	status: true;
+	message: string;
 }
 
 export interface I_UserData {
 	status: true;
 	data: I_User[];
 }
-
-// interface I_

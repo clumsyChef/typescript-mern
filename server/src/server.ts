@@ -8,7 +8,7 @@ import cors from "cors";
 import { corsOptions } from "./configs/corsOptions";
 import { rootRouter, userRouter, authRouter } from "./routes";
 // import session from "express-session";
-import { verifyUser } from "./middlewares/auth/verifyUser";
+// import { verifyUser } from "./middlewares/auth/verifyUser";
 import cookieParser from "cookie-parser";
 
 import { Collection, Db, MongoClient, MongoClientOptions } from "mongodb";
@@ -42,15 +42,15 @@ app.use("/auth", authRouter);
 
 // all other routes
 app.all("*", (req: Request, res: Response) => {
-    res.status(404);
-    if (req.accepts("html")) {
-        // res.sendFile(path.join(__dirname, 'views', '404.html'))
-        res.json({ message: "404 Not Found" });
-    } else if (req.accepts("json")) {
-        res.json({ message: "404 Not Found" });
-    } else {
-        res.type("txt").send("404 Not Found");
-    }
+  res.status(404);
+  if (req.accepts("html")) {
+    // res.sendFile(path.join(__dirname, 'views', '404.html'))
+    res.json({ message: "404 Not Found" });
+  } else if (req.accepts("json")) {
+    res.json({ message: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
 });
 
 // const startServer = async () => {
@@ -75,39 +75,39 @@ app.all("*", (req: Request, res: Response) => {
 // }
 
 export const createMongoConnection = async () => {
-    const mongoOptions: MongoClientOptions = {
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-    } as MongoClientOptions;
+  const mongoOptions: MongoClientOptions = {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  } as MongoClientOptions;
 
-    // maybe put below in a variable and then return it ??
-    return await new Promise((resolve, reject) => {
-        try {
-            const client: MongoClient = new MongoClient(process.env.MONGO_CONNECTION_URI as string, mongoOptions);
-            const database: Db = client.db("BlogDB");
-            const collection = database.collection("users");
-            resolve(collection);
-        } catch (err) {
-            resolve(false);
-        }
-    });
+  // maybe put below in a variable and then return it ??
+  return await new Promise((resolve, reject) => {
+    try {
+      const client: MongoClient = new MongoClient(process.env.MONGO_CONNECTION_URI as string, mongoOptions);
+      const database: Db = client.db("BlogDB");
+      const collection = database.collection("users");
+      resolve(collection);
+    } catch (err) {
+      resolve(false);
+    }
+  });
 };
 
 export let userCollection: any;
 
 const StartServer = async () => {
-    const collection = (await createMongoConnection()) as Collection<Document>;
-    // const x = await collection.find({ email: "sarthak" });
-    // console.log("asd -->", x);
-    if (collection) {
-        userCollection = collection;
-        app.listen(PORT, () => {
-            console.log(`Server is running on the port: ${PORT}`);
-        });
-        return collection;
-    } else {
-        console.log("MONGO CONNECTION FAILED");
-    }
+  const collection = (await createMongoConnection()) as Collection<Document>;
+  // const x = await collection.find({ email: "sarthak" });
+  // console.log("asd -->", x);
+  if (collection) {
+    userCollection = collection;
+    app.listen(PORT, () => {
+      console.log(`Server is running on the port: ${PORT}`);
+    });
+    return collection;
+  } else {
+    console.log("MONGO CONNECTION FAILED");
+  }
 };
 
 StartServer();

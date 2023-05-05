@@ -35,23 +35,27 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
 			// @ts-ignore
 			req.user = verifiedAccess.value;
 		} else {
-			const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
 			const userData = await UserModels.getAll({ refreshToken });
-			if (verifiedRefresh.value && userData?.length) {
-				const tokenData = { id: userData[0].id, email: userData[0].email };
-				const newAccessToken = jwt.sign(tokenData, accessSecret, {
-					expiresIn: "10s",
-				});
-				res.cookie("accessToken", newAccessToken, {
-					httpOnly: true,
-					maxAge: 10 * 1000,
-				});
-				console.log("New Access Token Generated");
-				// @ts-ignore
-				req.user = tokenData;
-			} else if (verifiedRefresh.expired && userData?.length) {
-				const newData = { ...userData[0], refreshToken: null };
-				const data = await UserModels.update(newData);
+			if (userData.status && userData.data.length) {
+				const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
+				const user = userData.data[0];
+				if (verifiedRefresh.value) {
+					const tokenData = verifiedRefresh.value;
+					const newAccessToken = jwt.sign(tokenData, accessSecret, {
+						expiresIn: "10s",
+					});
+					res.cookie("accessToken", newAccessToken, {
+						httpOnly: true,
+						maxAge: 10 * 1000,
+					});
+
+					console.log("New Access Token Generated");
+					// @ts-ignore
+					req.user = tokenData;
+				} else {
+					const newData = { ...user, refreshToken: null };
+					await UserModels.update(newData);
+				}
 			}
 		}
 	}

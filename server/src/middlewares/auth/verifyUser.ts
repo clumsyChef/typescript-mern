@@ -1,4 +1,4 @@
-import jwt, { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import type { Response, Request, NextFunction } from "express";
 import { UserModels } from "../../models";
 
@@ -40,7 +40,8 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
 				const verifiedRefresh = verifyToken(refreshToken, refreshSecret);
 				const user = userData.data[0];
 				if (verifiedRefresh.value) {
-					const tokenData = verifiedRefresh.value;
+					const { id, email } = verifiedRefresh.value;
+					const tokenData = { id, email };
 					const newAccessToken = jwt.sign(tokenData, accessSecret, {
 						expiresIn: "10s",
 					});

@@ -2,23 +2,23 @@ import type { Request, Response, NextFunction } from "express";
 import { UserModels } from "../../models";
 import { I_User } from "../../../types";
 
-const get = () => {
+const get = (req: Request, res: Response, next: NextFunction) => {
 	//
 };
 
-const create = () => {
+const create = (req: Request, res: Response, next: NextFunction) => {
 	//
 };
 
-const update = () => {
+const update = (req: Request, res: Response, next: NextFunction) => {
 	//
 };
 
-const remove = () => {
+const remove = (req: Request, res: Response, next: NextFunction) => {
 	//
 };
 
-const getAll = () => {
+const getAll = (req: Request, res: Response, next: NextFunction) => {
 	//
 };
 

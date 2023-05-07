@@ -1,14 +1,25 @@
 import data from "../../../db/users.json";
-import { appendToUsers } from "../../utils/dataManipulation";
 import { userCollection } from "../../server";
 import type { I_User, I_Error, I_Success, I_Params, I_UserData, I_JwtVerification } from "../../../types";
 
-// const get = async (id: string): Promise<I_UserData | undefined> => {
-// 	return new Promise((resolve, reject) => {
-// 		const userData = data.find((item: I_UserData) => item.id === id);
-// 		resolve(userData);
-// 	});
-// };
+const get = async (id: string): Promise<I_UserData | I_Error> => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const user = await userCollection.findOne({ id });
+			if (user) {
+				resolve({ status: true, data: user });
+			} else {
+				resolve({ status: false, error: "No User Found." });
+			}
+		} catch (err) {
+			if (err instanceof Error) {
+				resolve({ status: false, error: err.message });
+			} else {
+				resolve({ status: false, error: "Unexpected Error." });
+			}
+		}
+	});
+};
 
 const create = async (dataToSave: I_User): Promise<I_Error | I_Success> => {
 	return new Promise(async (resolve, reject) => {
@@ -40,15 +51,18 @@ const update = async (dataToSave: I_User) => {
 	});
 };
 
-const remove = async (id: string) => {
-	const changedData: I_User[] = data?.filter((item) => {
-		if (item.id !== id) return item;
-	});
-
-	const newDataAsStr: string = JSON.stringify(changedData, null, 4);
-	return new Promise((resolve, reject) => {
-		appendToUsers(newDataAsStr);
-		resolve(id);
+const remove = async (id: string): Promise<I_Success | I_Error> => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			await userCollection.deleteOne({ id });
+			resolve({ status: true, message: "User Successfully deleted." });
+		} catch (err) {
+			if (err instanceof Error) {
+				resolve({ status: false, error: err.message });
+			} else {
+				resolve({ status: false, error: "Unexpected Error." });
+			}
+		}
 	});
 };
 

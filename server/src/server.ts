@@ -12,6 +12,7 @@ import { verifyUser } from "./middlewares/auth/verifyUser";
 import cookieParser from "cookie-parser";
 
 import { Collection, Db, MongoClient, MongoClientOptions } from "mongodb";
+import { blogRouter } from "./routes/blogs/blogRouter";
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,7 @@ app.use(verifyUser);
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
+app.use("/blogs", blogRouter);
 
 // all other routes
 app.all("*", (req: Request, res: Response) => {

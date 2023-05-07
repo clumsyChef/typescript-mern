@@ -1,6 +1,5 @@
-import data from "../../../db/users.json";
 import { userCollection } from "../../server";
-import type { I_User, I_Error, I_Success, I_Params, I_UserData, I_JwtVerification } from "../../../types";
+import type { I_User, I_Error, I_Success, I_Params, I_UserData } from "../../../types";
 
 const get = async (id: string): Promise<I_UserData | I_Error> => {
 	return new Promise(async (resolve, reject) => {
@@ -102,19 +101,10 @@ const getAll = async (getParams?: I_Params): Promise<I_UserData | I_Error> => {
 	}
 };
 
-const getForJwtVerification = async (creds: I_JwtVerification) => {
-	const { id, email } = creds;
-	return new Promise((resolve, reject) => {
-		const userData = data.find((item) => item.id === id && item.email === email);
-		resolve(userData);
-	});
-};
-
 export const UserModels = {
-	// get,
+	get,
 	create,
 	update,
 	remove,
 	getAll,
-	getForJwtVerification,
 };

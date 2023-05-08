@@ -47,7 +47,6 @@ app.use("/blogs", blogRouter);
 app.all("*", (req: Request, res: Response) => {
 	res.status(404);
 	if (req.accepts("html")) {
-		// res.sendFile(path.join(__dirname, 'views', '404.html'))
 		res.json({ message: "404 Not Found" });
 	} else if (req.accepts("json")) {
 		res.json({ message: "404 Not Found" });
@@ -55,27 +54,6 @@ app.all("*", (req: Request, res: Response) => {
 		res.type("txt").send("404 Not Found");
 	}
 });
-
-// const startServer = async () => {
-//     try {
-//         const database = client.db("BlogDB");
-//         const users = database.
-//     }
-// }
-
-// const MongoClient = require('mongodb').MongoClient;
-// async function getConnections(url,db){
-//     return new Promise((resolve,reject)=>{
-//         MongoClient.connect(url, { useUnifiedTopology: true },function(err, client) {
-//             if(err) { console.error(err)
-//                 resolve(false);
-//             }
-//             else{
-//                 resolve(client.db(db));
-//             }
-//         })
-//     });
-// }
 
 export const createMongoConnection = async () => {
 	const mongoOptions: MongoClientOptions = {
@@ -100,8 +78,6 @@ export let userCollection: any;
 
 const StartServer = async () => {
 	const collection = (await createMongoConnection()) as Collection<Document>;
-	// const x = await collection.find({ email: "sarthak" });
-	// console.log("asd -->", x);
 	if (collection) {
 		userCollection = collection;
 		app.listen(PORT, () => {
@@ -114,14 +90,3 @@ const StartServer = async () => {
 };
 
 StartServer();
-
-// module.exports = async function(){
-//     let dbs      = [];
-//     dbs['db1']     = await getConnections('mongodb://localhost:27017/','db1');
-//     dbs['db2']     = await getConnections('mongodb://localhost:27017/','db2');
-//     return dbs;
-// };
-
-// app.listen(PORT, () => {
-//     console.log(`Server is running on the port: ${PORT}`);
-// });
